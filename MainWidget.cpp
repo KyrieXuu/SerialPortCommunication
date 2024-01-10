@@ -297,13 +297,14 @@ void MainWidget::recvData()
         //接收发送要一致，如果是处理字节数据，可以把QByteArray当数组一样取下标，或者用data()方法转为char*形式
         processCompletePacket(&recv_buffer);
 //        ui->textRecv->append(QString::fromUtf8(recv_data));
-//        qDebug()<<"已接收："<<QString::fromUtf8(recv_data);
+        qDebug()<<"已接收1："<<QString::fromUtf8(recv_data);
+        qDebug()<<"已接收2："<<QString::fromUtf8(recv_buffer);
     }
 }
 
 void MainWidget::processCompletePacket(QByteArray* buffer){
 //    qDebug()<<"接收到"<<buffer;
-//    qDebug()<<"已接收："<<buffer->toHex(' ');
+//    qDebug()<<"接收到："<<buffer->toHex(' ');
     const QByteArray start_flag = QByteArray::fromHex(sf.toLatin1());  // 青鸟起始标志为 0x82
     const QByteArray end_flag = QByteArray::fromHex(ef.toLatin1());    // 青鸟结束标志为 0x83
     const QByteArray begin_flag = QByteArray::fromHex(bf.toLatin1());  // 依爱起始标志为 0x68
@@ -386,7 +387,10 @@ void MainWidget::processCompletePacket(QByteArray* buffer){
         mqttclient.publishJSONMessage("testtopic", resultdata, 0);
 
         // 清除已处理的数据包
-        buffer->remove(begin_pos, begin_pos + length_value+6);
+        buffer->remove(0, begin_pos + length_value+6);
+//        qDebug()<<"清除后："<<buffer->toHex(' ');
+        // 递归调用，继续处理剩余的数据
+        processCompletePacket(buffer);
     }
 }
 
