@@ -50,6 +50,7 @@ private:
     void processCompletePacket(QByteArray* buffer); //处理不连续数据并解析
     QString mqttIP;  //MQTT连接IP
     int mqttPort;  //MQTT连接端口
+    int flag = 0;  //防止出现一组数据多次传输
 
     QLineEdit *ipLineEdit;//IP输入框
     QLineEdit *portLineEdit;//端口输入框

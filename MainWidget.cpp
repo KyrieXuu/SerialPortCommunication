@@ -297,14 +297,14 @@ void MainWidget::recvData()
         //接收发送要一致，如果是处理字节数据，可以把QByteArray当数组一样取下标，或者用data()方法转为char*形式
         processCompletePacket(&recv_buffer);
 //        ui->textRecv->append(QString::fromUtf8(recv_data));
-        qDebug()<<"已接收1："<<QString::fromUtf8(recv_data);
-        qDebug()<<"已接收2："<<QString::fromUtf8(recv_buffer);
+//        qDebug()<<"已接收1："<<QString::fromUtf8(recv_data);
+//        qDebug()<<"已接收2："<<QString::fromUtf8(recv_buffer);
     }
 }
 
 void MainWidget::processCompletePacket(QByteArray* buffer){
 //    qDebug()<<"接收到"<<buffer;
-//    qDebug()<<"接收到："<<buffer->toHex(' ');
+//    qDebug()<<"处理接收到："<<buffer->toHex(' ');
     const QByteArray start_flag = QByteArray::fromHex(sf.toLatin1());  // 青鸟起始标志为 0x82
     const QByteArray end_flag = QByteArray::fromHex(ef.toLatin1());    // 青鸟结束标志为 0x83
     const QByteArray begin_flag = QByteArray::fromHex(bf.toLatin1());  // 依爱起始标志为 0x68
@@ -349,6 +349,7 @@ void MainWidget::processCompletePacket(QByteArray* buffer){
 
     }else if(begin_pos>=0 && length_value>=0 && buffer->mid(begin_pos, 1)==buffer->mid(begin_pos+3, 1) \
                && buffer->mid(begin_pos+length_value+6-1, 1)==finish_flag){
+//        qDebug()<<"进入了yiai解析";
         // 提取完整的数据包
         QByteArray complete_packet = buffer->mid(begin_pos, length_value+6);
 
@@ -391,6 +392,16 @@ void MainWidget::processCompletePacket(QByteArray* buffer){
 //        qDebug()<<"清除后："<<buffer->toHex(' ');
         // 递归调用，继续处理剩余的数据
         processCompletePacket(buffer);
+    }else{
+        flag++;
+//        qDebug()<<"标志："<<flag;
+        if(flag >1){        //如果连续两次数据错误则清除缓存
+//            qDebug()<<"循环标志："<<flag;
+            //若数据错误，则清除缓存
+            buffer->clear();
+//            qDebug()<<"错误数据清除后："<<buffer->toHex(' ');
+            flag = 0;
+        }
     }
 }
 
