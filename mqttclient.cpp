@@ -34,8 +34,41 @@ void MQTTClient::connect(QString hostname, int port){
     m_client.setHostname(hostname);
     m_client.setPort(static_cast<quint16>(port));
     m_client.connectToHost();
+    QObject::connect(&m_client, &QMqttClient::stateChanged, [&](QMqttClient::ClientState state) {
+        if (state == QMqttClient::Connected)
+        {
+            qDebug() << "MQTT connection is established.";
+        }
+        else if (state == QMqttClient::Disconnected)
+        {
+            qDebug() << "MQTT connection is disconnected.";
+            retryConnect();
+        }
+    });
 }
 
 void MQTTClient::disconnect(){
     m_client.disconnectFromHost();
+}
+
+//void MQTTClient::handleError(QMqttClient::ClientError error) {
+//    qDebug() << "MQTT client error:" << error;
+
+//    // 处理连接错误的情况，例如重新连接或其他操作
+//    QTimer::singleShot(5000, [this]() {
+//        retryConnect();
+//    });
+//}
+
+void MQTTClient::retryConnect() {
+    while(m_client.state() == QMqttClient::Disconnected){
+        m_client.connectToHost();
+        qDebug() << "Retrying MQTT connection...";
+        currentReconnectAttempts++;
+        if(currentReconnectAttempts > maxReconnectAttempts){
+            currentReconnectAttempts = 0;
+            qDebug() << "超过重连次数，重连失败";
+            break;
+        }
+    }
 }

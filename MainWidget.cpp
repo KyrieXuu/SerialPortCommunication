@@ -298,13 +298,13 @@ void MainWidget::recvData()
         processCompletePacket(&recv_buffer);
 //        ui->textRecv->append(QString::fromUtf8(recv_data));
 //        qDebug()<<"已接收1："<<QString::fromUtf8(recv_data);
-//        qDebug()<<"已接收2："<<QString::fromUtf8(recv_buffer);
+        qDebug()<<"已接收2："<<QString::fromUtf8(recv_buffer);
     }
 }
 
 void MainWidget::processCompletePacket(QByteArray* buffer){
 //    qDebug()<<"接收到"<<buffer;
-//    qDebug()<<"处理接收到："<<buffer->toHex(' ');
+    qDebug()<<"处理接收到："<<buffer->toHex(' ');
     const QByteArray start_flag = QByteArray::fromHex(sf.toLatin1());  // 青鸟起始标志为 0x82
     const QByteArray end_flag = QByteArray::fromHex(ef.toLatin1());    // 青鸟结束标志为 0x83
     const QByteArray begin_flag = QByteArray::fromHex(bf.toLatin1());  // 依爱起始标志为 0x68
@@ -369,7 +369,7 @@ void MainWidget::processCompletePacket(QByteArray* buffer){
         //打印系统时间
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString currentTimeString = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-        //在我自己的电脑上存储数据
+        //存储数据
         saveDataInTxtFile("D:/Qt/yiai2.txt", currentTimeString);
         saveDataInTxtFile("D:/Qt/yiai2.txt", buffer->toHex(' '));
         saveDataInTxtFile("D:/Qt/yiai2.txt", resultdata);
@@ -394,12 +394,12 @@ void MainWidget::processCompletePacket(QByteArray* buffer){
         processCompletePacket(buffer);
     }else{
         flag++;
-//        qDebug()<<"标志："<<flag;
-        if(flag >1){        //如果连续两次数据错误则清除缓存
-//            qDebug()<<"循环标志："<<flag;
+        qDebug()<<"标志："<<flag;
+        if(flag >2){        //如果连续两次数据错误则清除缓存
+            qDebug()<<"循环标志："<<flag;
             //若数据错误，则清除缓存
             buffer->clear();
-//            qDebug()<<"错误数据清除后："<<buffer->toHex(' ');
+            qDebug()<<"错误数据清除后："<<buffer->toHex(' ');
             flag = 0;
         }
     }

@@ -11,7 +11,6 @@
 #include <QPushButton>
 
 
-
 class QSerialPort;
 
 namespace Ui {
@@ -34,7 +33,7 @@ public:
     void refreshSerial();//槽函数-刷新串口名列表
     void connectbroker();//连接服务器
 
-    void saveDataInTxtFile(QString filepath, QString data);
+    void saveDataInTxtFile(QString filepath, QString data);     //将解析的数据保存到文件中
 
 private:
     QStringList getSerialPortNames();//获取串口名列表
